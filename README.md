@@ -26,10 +26,10 @@ Hex file explore tool.
 - Help
   - **i1/i**:  Image1 path
   - **i2**:    Image2 path
-  - **m**:     Selet mode.
-          - [0] STANDARD_MODE
-          - [1] SEARCH_MODE
-          - [2] COMPARE_MODE
+  - **m**:     Selet mode.\
+          - [0] STANDARD_MODE\
+          - [1] SEARCH_MODE\
+          - [2] COMPARE_MODE\
           note: Default is STANDARD_MODE
   - **k**:     Hex list in SEARCH_MODE\
         note: Only work in SEARCH_MODE
