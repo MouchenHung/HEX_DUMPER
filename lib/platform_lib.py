@@ -188,6 +188,8 @@ class Platform:
             ofst += self.display_hex_num
 
         print("-------------------------------------------------------------------------------------------------------------------")
+        print("image1 size: ", hex(len(img1_data)).rjust(8, '0'))
+        print("image2 size: ", hex(len(img2_data)).rjust(8, '0'))
 
     def color_split_print(self, hex_data, focus_lst, ofst):
         for i in range(ofst, ofst+self.display_hex_num, 1):
