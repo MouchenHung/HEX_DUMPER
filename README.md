@@ -11,6 +11,11 @@ Hex file explore tool.
     2022.11.08
 
 ### Version:
+- 1.0.1 - 2022/11/08
+  - Feature:
+    - Split code to common and platform.
+  - Bug: none
+
 - 1.0.0 - First commit - 2022/11/08
   - Feature: none
   - Bug: none
