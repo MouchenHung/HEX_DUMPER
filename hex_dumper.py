@@ -16,7 +16,7 @@ from lib.common_lib import msg_hdr_print, msg_color_print
 APP_NAME = "HEX DUMPER"
 APP_AUTH = "Mouchen"
 APP_RELEASE_VER = "1.0.0"
-APP_RELEASE_DATE = "2022.11.04"
+APP_RELEASE_DATE = "2022.11.08"
 
 MODE_STANDARD = 0
 MODE_SEARCH = 1
@@ -33,6 +33,7 @@ def list_dump(list, pre_msg=""):
             print(list[i].replace("0x", ""), end=", ")
     print("]")
 
+# Without color
 def image_dump_two_1(img_path1, img_path2, rec_ofst=0, rec_num=-1, mode="all"):
     img1_data = []
     img2_data = []
@@ -156,6 +157,7 @@ def color_split_print(hex_data, focus_lst, ofst):
         else:
             print(hex(hex_data[i]).replace("0x", "").rjust(2, '0'), end=" ")
 
+# With color
 def image_dump_two_2(img_path1, img_path2, rec_ofst=0, rec_num=-1, mode="all"):
     img1_data = []
     img2_data = []
@@ -255,7 +257,7 @@ def image_dump_two_2(img_path1, img_path2, rec_ofst=0, rec_num=-1, mode="all"):
     print("image1 size: ", hex(len(img1_data)).rjust(8, '0'))
     print("image2 size: ", hex(len(img2_data)).rjust(8, '0'))
 
-def image_dump(img_path, rec_ofst=0, rec_num=-1):
+def image_dump(img_path, rec_ofst=0, rec_num=-1, force_flag=0):
     with open(img_path,"rb") as f:
         data = f.read()
 
@@ -289,10 +291,16 @@ def image_dump(img_path, rec_ofst=0, rec_num=-1):
                 if i == ofst + int(DISPLAY_HEX_NUM/2):
                     print("", end='  ')
                 if (i >= rec_ofst and rec_remain != 0):
-                    print(hex(data[i]).replace("0x", "").rjust(2, '0'), end=' ')
+                    if force_flag:
+                        msg_color_print(hex(data[i]).replace("0x", "").rjust(2, '0'), common.bcolors.red, " ")
+                    else:
+                        print(hex(data[i]).replace("0x", "").rjust(2, '0'), end=' ')
                     rec_remain -= 1
                 else:
-                    print("  ", end=' ')
+                    if force_flag:
+                        print(hex(data[i]).replace("0x", "").rjust(2, '0'), end=' ')
+                    else:
+                        print("  ", end=' ')
             print("")
 
             if end_flag:
@@ -300,6 +308,7 @@ def image_dump(img_path, rec_ofst=0, rec_num=-1):
 
             ofst += DISPLAY_HEX_NUM
         print("------------------------------------------------------------")
+        print("image size: ", hex(len(data)).rjust(8, '0'))
 
 def is_file_exist(file_path):
     if not os.path.exists(file_path):
@@ -367,7 +376,7 @@ def list_rm(list, idx=-1):
 
     return new_lst
 
-def Search_mode_task(img_path, search_list):
+def Search_mode_task(img_path, search_list, force_flag=0):
     combo_flag = 0
     rec_ofst_lst = []
     rec_idx = 0
@@ -392,9 +401,9 @@ def Search_mode_task(img_path, search_list):
                     rec_idx += 1
 
     for rec_ofst in rec_ofst_lst:
-        image_dump(img_path, rec_ofst, len(search_list))
+        image_dump(img_path, rec_ofst, len(search_list), force_flag)
 
-def Compare_mode_task(img_path1, img_path2, sub_mode, force_flag):
+def Compare_mode_task(img_path1, img_path2, sub_mode, force_flag=0):
     if sub_mode == 0:
         if force_flag:
             image_dump_two_2(img_path1, img_path2)
@@ -414,7 +423,7 @@ def Compare_mode_task(img_path1, img_path2, sub_mode, force_flag):
         msg_hdr_print("e", "Not support sub-mode ["+ str(sub_mode) +"]")
 
 def APP_HELP():
-    msg_hdr_print("n", "--------------------------------------------------")
+    msg_hdr_print("n", "--------------------------------------------------", "\n")
     msg_hdr_print("n", "HELP:")
     msg_hdr_print("n", "-i1/-i  Image1 path")
     msg_hdr_print("n", "-i2     Image2 path")
@@ -559,6 +568,24 @@ if __name__ == '__main__':
         msg_hdr_print("e", "Unsupported mode!")
         err_flag = 1
 
+    if image1_path:
+        if not is_file_exist(image1_path):
+            msg_hdr_print("e", "Image1 is not existed!")
+            err_flag = 1
+        else:
+            if not is_binary(image1_path):
+                msg_hdr_print("e", "Image1 is empty or not binary file!")
+                err_flag = 1
+
+    if image2_path:
+        if not is_file_exist(image2_path):
+            msg_hdr_print("e", "Image2 is not existed!")
+            err_flag = 1
+        else:
+            if not is_binary(image2_path):
+                msg_hdr_print("e", "Image2 is empty or not binary file!")
+                err_flag = 1
+
     if err_flag:
         APP_HELP()
         sys.exit(0)
@@ -590,9 +617,9 @@ if __name__ == '__main__':
         list_dump(key_lst, "         * search_lst: ")
 
         if image1_path != "":
-            Search_mode_task(image1_path, key_lst)
+            Search_mode_task(image1_path, key_lst, force_print_flag)
         else:
-            Search_mode_task(image2_path, key_lst)
+            Search_mode_task(image2_path, key_lst, force_print_flag)
 
     elif mode_select == MODE_COMPARE:
         msg_hdr_print("c", "* mode:       COMPARE MODE")
